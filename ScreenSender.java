@@ -1,29 +1,17 @@
-import java.awt.AWTException;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.Socket;
 
 import javax.imageio.ImageIO;
 
 public class ScreenSender extends Thread {
-  private void shareTo(byte[] imageData, String IP, int PORT) throws Exception {
-    // InetAddress internetAddress = InetAddress.getByName(IP);
-    // DatagramSocket socket = new DatagramSocket();
-    // DatagramPacket dp = new DatagramPacket(imageData, imageData.length,
-    // internetAddress, PORT);
-    // socket.send(dp);
-  }
-
   private final Robot robot;
   private final Rectangle screenSize;
   private final Rectangle sendSize;
@@ -80,10 +68,6 @@ public class ScreenSender extends Thread {
           flags = flags | Constants.END_FLAG;
         }
 
-        System.out.println("last=" + last);
-
-        // int size = (flags & FINISH_SESSION) != FINISH_SESSION ? MAX_DATAGRAM
-        // : imageArrayBytes.length - i * MAX_DATAGRAM;
         int size = Constants.MAX_DATAGRAM_SIZE;
         if (first && last) {
           size = screenshot.length;
@@ -97,26 +81,14 @@ public class ScreenSender extends Thread {
         byte[] sizeInBytes = ByteUtils.intToBytes(size);
         System.arraycopy(sizeInBytes, 0, data, 1, sizeInBytes.length);
         System.arraycopy(totalSizeInBytes, 0, data, 5, totalSizeInBytes.length);
-        // arrayBytes[1] = (byte) packages;
-        // arrayBytes[2] = (byte) (MAX_DATAGRAM >> 8);
-        // arrayBytes[3] = (byte) MAX_DATAGRAM;
-        // arrayBytes[4] = (byte) i;
-        // arrayBytes[5] = (byte) (size >> 8);
-        // arrayBytes[6] = (byte) size;
-
         System.arraycopy(screenshot, i * Constants.MAX_DATAGRAM_SIZE, data, Constants.HEADER_SIZE, size);
-
-        // myScreen.shareTo(arrayBytes, "127.0.0.1", 6000);
-
-        // if ((flags & FINISH_SESSION) == FINISH_SESSION)
-        // break;
 
         // Send the packet
         DatagramPacket packet = new DatagramPacket(data, data.length, localhost, 9000);
         socket.send(packet);
       }
 
-      Thread.sleep(1600);
+      Thread.sleep(60);
     }
   }
 
@@ -136,51 +108,4 @@ public class ScreenSender extends Thread {
     ImageIO.write(resizedImage, "jpg", baos);
     return baos.toByteArray();
   }
-
-  public static void main(String[] args) throws Exception {
-    // ScreenSender myScreen = new ScreenSender();
-
-    // while (true) {
-    // // BufferedImage optimizedImage = getOptimizedImage();
-    // // byte[] imageArrayBytes = transformImageToBytes(optimizedImage);
-    // byte[] imageArrayBytes = new ScreenSender().getScreenshot();
-
-    // int packages = (int) Math.ceil(imageArrayBytes.length / (float)
-    // MAX_DATAGRAM);
-
-    // if (packages > MAX_PACKAGE_SIZE)
-    // continue;
-
-    // for (int i = 0; i <= packages; i++) {
-    // int flags = 0;
-    // flags = i == 0 ? flags | START_SESSION : flags;
-    // flags = (i + 1) * MAX_DATAGRAM > imageArrayBytes.length ? flags |
-    // FINISH_SESSION : flags;
-
-    // int size = (flags & FINISH_SESSION) != FINISH_SESSION ? MAX_DATAGRAM
-    // : imageArrayBytes.length - i * MAX_DATAGRAM;
-
-    // byte[] arrayBytes = new byte[HEADER_SIZE + size];
-    // arrayBytes[0] = (byte) flags;
-    // arrayBytes[1] = (byte) packages;
-    // arrayBytes[2] = (byte) (MAX_DATAGRAM >> 8);
-    // arrayBytes[3] = (byte) MAX_DATAGRAM;
-    // arrayBytes[4] = (byte) i;
-    // arrayBytes[5] = (byte) (size >> 8);
-    // arrayBytes[6] = (byte) size;
-
-    // System.arraycopy(imageArrayBytes, i * MAX_DATAGRAM, arrayBytes, HEADER_SIZE,
-    // size);
-
-    // myScreen.shareTo(arrayBytes, "127.0.0.1", 6000);
-
-    // if ((flags & FINISH_SESSION) == FINISH_SESSION)
-    // break;
-    // }
-
-    // Thread.sleep(80);
-
-    // }
-  }
-
 }
