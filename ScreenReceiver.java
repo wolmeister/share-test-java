@@ -53,7 +53,6 @@ public class ScreenReceiver extends Thread {
       byte[] sizeInBytes = new byte[4];
       System.arraycopy(data, 1, sizeInBytes, 0, 4);
       int size = ByteUtils.bytesToInt(sizeInBytes);
-      imageData = new byte[size];
 
       if ((flags & Constants.START_FLAG) == Constants.START_FLAG) {
         byte[] totalSizeInBytes = new byte[4];
@@ -63,8 +62,8 @@ public class ScreenReceiver extends Thread {
         copiedSize = 0;
       }
 
-      System.arraycopy(data, Constants.HEADER_SIZE, imageData, copiedSize, size);
-      copiedSize += size;
+      System.arraycopy(data, Constants.HEADER_SIZE, imageData, copiedSize, size - Constants.HEADER_SIZE);
+      copiedSize += size - Constants.HEADER_SIZE;
 
       if ((flags & Constants.END_FLAG) == Constants.END_FLAG) {
         ByteArrayInputStream bis = new ByteArrayInputStream(imageData);
