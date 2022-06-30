@@ -10,9 +10,9 @@ public class SoundSender extends Thread {
 
   private final TargetDataLine line;
   private final DatagramSocket socket;
-  private final InetAddress localhost;
+  private final InetAddress host;
 
-  public SoundSender() {
+  public SoundSender(InetAddress host) {
     try {
       AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100, 16, 2, 4, 44100, false);
       line = AudioSystem.getTargetDataLine(format);
@@ -20,7 +20,7 @@ public class SoundSender extends Thread {
       line.start();
 
       this.socket = new DatagramSocket();
-      this.localhost = InetAddress.getLocalHost();
+      this.host = host;
 
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -40,7 +40,7 @@ public class SoundSender extends Thread {
     while (true) {
       byte[] data = new byte[4096];
       line.read(data, 0, data.length);
-      DatagramPacket packet = new DatagramPacket(data, data.length, localhost, 9001);
+      DatagramPacket packet = new DatagramPacket(data, data.length, host, 9001);
       socket.send(packet);
     }
   }

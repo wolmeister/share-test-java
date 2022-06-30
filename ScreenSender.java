@@ -16,9 +16,9 @@ public class ScreenSender extends Thread {
   private final Rectangle screenSize;
   private final Rectangle sendSize;
   private final DatagramSocket socket;
-  private final InetAddress localhost;
+  private final InetAddress host;
 
-  public ScreenSender() {
+  public ScreenSender(InetAddress host) {
     try {
       this.robot = new Robot();
       this.screenSize = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
@@ -28,7 +28,7 @@ public class ScreenSender extends Thread {
       this.sendSize = new Rectangle(scaledWidth, scaledHeight);
 
       this.socket = new DatagramSocket();
-      this.localhost = InetAddress.getLocalHost();
+      this.host = host;
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -84,7 +84,7 @@ public class ScreenSender extends Thread {
         System.arraycopy(screenshot, i * Constants.MAX_DATAGRAM_SIZE, data, Constants.HEADER_SIZE, size);
 
         // Send the packet
-        DatagramPacket packet = new DatagramPacket(data, data.length, localhost, 9000);
+        DatagramPacket packet = new DatagramPacket(data, data.length, host, 9000);
         socket.send(packet);
       }
 
