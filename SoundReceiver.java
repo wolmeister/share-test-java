@@ -10,6 +10,7 @@ public class SoundReceiver extends Thread {
   public SoundReceiver() {
     try {
       line = AudioUtils.getDataLine(SourceDataLine.class);
+      line.open();
       line.start();
 
       this.socket = new DatagramSocket(9001);

@@ -1,10 +1,10 @@
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.TargetDataLine;
-
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.TargetDataLine;
 
 public class SoundSender extends Thread {
 
@@ -14,9 +14,10 @@ public class SoundSender extends Thread {
 
   public SoundSender() {
     try {
-      AudioFormat format = new AudioFormat(8000.0f, 16, 1, true, true);
+      AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100, 16, 2, 4, 44100, false);
       line = AudioSystem.getTargetDataLine(format);
       line.open();
+      line.start();
 
       this.socket = new DatagramSocket();
       this.localhost = InetAddress.getLocalHost();
