@@ -40,7 +40,7 @@ public class ScreenReceiver extends Thread {
   }
 
   private void doRun() throws Exception {
-    byte[] buffer = new byte[Constants.MAX_DATAGRAM_SIZE];
+    byte[] buffer = new byte[Constants.MAX_DATAGRAM_SIZE + Constants.HEADER_SIZE];
     byte[] imageData = null;
     int copiedSize = 0;
 
@@ -62,8 +62,8 @@ public class ScreenReceiver extends Thread {
         copiedSize = 0;
       }
 
-      System.arraycopy(data, Constants.HEADER_SIZE, imageData, copiedSize, size - Constants.HEADER_SIZE);
-      copiedSize += size - Constants.HEADER_SIZE;
+      System.arraycopy(data, Constants.HEADER_SIZE, imageData, copiedSize, size);
+      copiedSize += size;
 
       if ((flags & Constants.END_FLAG) == Constants.END_FLAG) {
         ByteArrayInputStream bis = new ByteArrayInputStream(imageData);
